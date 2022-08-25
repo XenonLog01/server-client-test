@@ -8,7 +8,7 @@ dotenv.load_dotenv()
 port = int(os.getenv('PORT'))
 
 data = {
-    'id': 0,
+    'id': 1,
 }
 
 # Send POST request, and report the status.

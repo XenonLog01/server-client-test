@@ -68,7 +68,10 @@ class Server(BaseHTTPRequestHandler):
                 return True
 
             file = read_json(self.jsonPath)
-            file[str(id)]['interactions'] += 1
+            try:
+                file[str(id)]['interactions'] += 1
+            except KeyError:
+                file[str(id)] = {'interactions': 1}
             write_json(self.jsonPath, file)
 
         except KeyError:
