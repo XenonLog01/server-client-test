@@ -24,3 +24,5 @@ Todo:
  * Update the HEAD request handler.
  * Improve responses for GET and POST requests.
  * Improve error handling both client and server side.
+ * Update the database to be SQL, or some other widely used DB, rather 
+   than a single JSON.
