@@ -1,7 +1,6 @@
 from debug import *
 import requests
 import dotenv
-import json
 import os
 
 dotenv.load_dotenv()
