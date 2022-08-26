@@ -18,14 +18,13 @@ class Server(BaseHTTPRequestHandler):
     port = int(os.getenv('PORT'))
     jsonPath = os.getenv('SERVER_JSONPATH')
 
-    def _set_headers(self, _status=200, data=None, set_type=True):
+    def _set_headers(self, _status=200, data=None):
         if data is not None:
             self.send_response(_status, data)
         else:
             self.send_response(_status)
 
-        if set_type:
-            self.send_header('Content-type', 'application/json')
+        self.send_header('Content-type', 'application/json')
         self.end_headers()
 
     def do_HEAD(self):
@@ -33,10 +32,16 @@ class Server(BaseHTTPRequestHandler):
 
     def do_GET(self):
         try:
-            file_to_open = open(self.jsonPath)
+            file = json.load(open(self.jsonPath))
+
+            length = int(self.headers['Content-Length'])
+            msg = json.loads(self.rfile.read(length))
+
+            # The wfile, as it turns out, is actually the
+            # response. who would've guessed?
             self._set_headers()
-            self.wfile.write(bytes(json.dumps(json.load(file_to_open)),
-                                   "utf-8"))
+            self.wfile.write(bytes(json.dumps(file[str(msg['id'])]), "utf-8"))
+
         except FileNotFoundError:
             self._set_headers(404)
 
