@@ -22,7 +22,6 @@ import os
 
 dotenv.load_dotenv()
 
-
 def write_json(filepath: str, data: dict):
     """Writes data into the json file
     specified with the filepath parameter.
@@ -45,7 +44,6 @@ def read_json(filepath) -> dict:
 
     Returns :: dict : The contents of the json file.
     """
-
     with open(filepath, 'r', encoding='UTF-8') as f:
         return json.loads(f.read())
 
@@ -53,21 +51,15 @@ class Server(BaseHTTPRequestHandler):
     port = int(os.getenv('PORT'))
     jsonPath = os.getenv('SERVER_JSONPATH')  # The path which the server's primary JSON file is located.
 
-    def _set_headers(self, _status=200, data=None):
+    def _set_headers(self, _status=200):
         """Sets the response headers for the request.
 
         Parameters:
-         - _status :: int : The status code of the request.
-         - data :: dict - default None : Data to be sent with the header.
+         - _status :: int - default 200 : The status code of the request.
 
         Returns :: None
         """
-
-        if data is not None:
-            self.send_response(_status, data)
-        else:
-            self.send_response(_status)
-
+        self.send_response(_status)
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
@@ -89,22 +81,30 @@ class Server(BaseHTTPRequestHandler):
 
         Responses:
          - 200 :: success : Everything went smoothly.
-         - 404 :: failure : The server was unable to find the master json file.
+         - 400 :: failure : The data sent was not json.
+         - 404 :: failure : The server was unable to find the master json file,.
 
         Returns :: None
         """
+        # Make sure that the sent data type is actually json.
+        if self.headers['Content-Type'] != 'application/json':
+            self._set_headers(400)
+            return
+
         try:
             file = json.load(open(self.jsonPath))
 
+            # Get the sent content from within the header.
             length = int(self.headers['Content-Length'])
             msg = json.loads(self.rfile.read(length))
 
+            self._set_headers()
             # The wfile, as it turns out, is actually the
             # response. who would've guessed?
-            self._set_headers()
             self.wfile.write(bytes(json.dumps(file[str(msg['id'])]), "utf-8"))
 
         except FileNotFoundError:
+            # If the master JSON file is not found, throw an error.
             self._set_headers(404)
 
     def do_POST(self):
@@ -121,20 +121,22 @@ class Server(BaseHTTPRequestHandler):
 
         Returns :: None
         """
+        # Make sure that the sent data type is actually json.
         if self.headers['Content-Type'] != 'application/json':
             self._set_headers(400)
             return
 
         try:
+            # Try to read the contents of the header.
             length = int(self.headers['Content-Length'])
             msg = json.loads(self.rfile.read(length))
 
+            # Process the json sent, and check if it's an error.
             process_error = self._process_Json(msg)
-
-            if not process_error:
-                return
+            if not process_error: return
 
         except FileNotFoundError:
+            # If master JSON file is not found, throw an error.
             self._set_headers(404)
             return
 
@@ -149,23 +151,27 @@ class Server(BaseHTTPRequestHandler):
         Returns :: bool : Was successful? If so, return True.
         """
         try:
+            # Attempt to grab the 'user' ID from the header
             id = msg['id']
             if id < 0:
-                self._set_headers(400)
+                self._set_headers(400) # If it's negative, throw an error.
                 return False
 
+            # Otherwise, update the master json file.
             file = read_json(self.jsonPath)
             try:
-                file[str(id)]['interactions'] += 1
+                file[str(id)]['interactions'] += 1  # Increment User Interactions (placeholder)
             except KeyError:
-                file[str(id)] = {'interactions': 1}
-            write_json(self.jsonPath, file)
+                file[str(id)] = {'interactions': 1}  # If the ID doesn't exist, create a new entry.
+            write_json(self.jsonPath, file)  # Write to the file the new changes.
 
         except KeyError:
+            # If the ID isn't found, throw an error.
             self._set_headers(422)
             return False
 
-        return True
+        return True  # Nominal exit.
+
 if __name__ == '__main__':
     httpd = HTTPServer(('localhost', Server.port), Server)
     httpd.serve_forever()
