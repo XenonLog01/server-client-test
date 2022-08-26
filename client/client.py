@@ -10,7 +10,7 @@ Functions:
  - req_Get :: None : Sends a GET request to the server at the specified address.
 """
 
-from util import *
+from helpers.util import *
 import requests
 import dotenv
 import os
@@ -26,7 +26,7 @@ def req_Post(server: str, data: dict):
 
     Parameters:
      - server :: str : The address of the server to send the request to.
-     - data :: dict : The data to send in the header of the request.
+     - database :: dict : The database to send in the header of the request.
 
     Returns :: None
     """
@@ -48,7 +48,7 @@ def req_Get(server: str, data: dict):
 
     Parameters:
      - server :: str : The address of the server to send the request to.
-     - data :: dict : The data to send in the header of the request.
+     - database :: dict : The database to send in the header of the request.
 
     Returns :: None
     """
@@ -59,10 +59,11 @@ def req_Get(server: str, data: dict):
             f"{INFO_RESULT}GET request was a "
             f"{f'{TEXT_GREEN}success{TEXT_RESET}.' if response.status_code == 200 else f'{TEXT_RED}failure{TEXT_RESET}, with error code {TEXT_CYAN}{response.status_code}{TEXT_RESET}.'}"
         )
+        print(f"{INFO_RESULT}Response was: {TEXT_L_GREY}{response.text}{TEXT_RESET}")
     except requests.exceptions.ConnectionError:
         # If the server never responds, thrown an error.
         print(f"{INFO_ERROR} Server is unable to be reached!")
 
 if __name__ == '__main__':
     # req_Post(f'http://localhost:{port}/', {'id': 1})
-    req_Get(f'http://localhost:{port}/', {'id': 1})
+    req_Get(f'http://localhost:{port}/', {'id': 0})

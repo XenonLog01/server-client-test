@@ -7,7 +7,7 @@ A file with a bunch of useful helper functions and variables.
 
 Constants:
  - TEXT_{COLOR} : Various variables to format text with color.
- - INFO_{TAG} : Information callouts to draw attention to data.
+ - INFO_{TAG} : Information callouts to draw attention to database.
  - INFO_{TAG}_nCL : Information callouts, without the color.
 
 Decorators:
@@ -15,11 +15,13 @@ Decorators:
  - debug_time_no_col : debug_time, but colorless to be Windows-friendly.
 
 Functions:
- -
+ - write_json :: None : Writes database into a json file.
+ - read_json :: dict : Reads database from a specified json file.
 
 """
 
 import time
+import json
 
 # NOTE: text coloring does NOT work in Windows terminals.
 # However, it *will* work in jetbrains terminals, for whatever reason,
@@ -54,6 +56,31 @@ INFO_DEBUG_nCL   = f'[DBG] '
 INFO_CMD_nCL     = f'[CMD] '
 INFO_RESULT_nCL  = f'[RES] '
 INFO_OUTPUT_nCL  = f'[OUT] '
+
+def write_json(filepath: str, data: dict):
+    """Writes database into the json file
+    specified with the filepath parameter.
+
+    Parameters:
+     - filepath :: str : The file to be written to.
+     - database :: dict : The database to be written into the file.
+
+    Returns :: None
+    """
+    with open(filepath, 'w', encoding='UTF-8') as f:
+        f.write(json.dumps(data))
+
+def read_json(filepath) -> dict:
+    """Reads the database from the json file
+    specified by filepath.
+
+    Parameters:
+     - filepath :: str : The file to be read from.
+
+    Returns :: dict : The contents of the json file.
+    """
+    with open(filepath, 'r', encoding='UTF-8') as f:
+        return json.loads(f.read())
 
 def debug_time(func):
     """A Decorator function which simply executes

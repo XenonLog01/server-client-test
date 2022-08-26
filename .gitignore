@@ -1,2 +1,5 @@
 .idea/
 venv/
+
+client.bat
+server.bat
