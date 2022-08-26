@@ -87,6 +87,7 @@ class Server(BaseHTTPRequestHandler):
             except KeyError:
                 data = {'interactions': 1}  # If the ID doesn't exist, create a new entry.
 
+            self.database.WRITE(id, data)
             self._set_headers()
             self.wfile.write(bytes(
                 json.dumps(data),  # Query the database.
