@@ -10,7 +10,7 @@ Functions:
  - req_Get :: None : Sends a GET request to the server at the specified address.
 """
 
-from debug import *
+from util import *
 import requests
 import dotenv
 import os
