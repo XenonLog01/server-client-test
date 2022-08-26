@@ -18,22 +18,23 @@ class Server(BaseHTTPRequestHandler):
     port = int(os.getenv('PORT'))
     jsonPath = os.getenv('SERVER_JSONPATH')
 
-    def _set_headers(self, _status=200, data=None):
+    def _set_headers(self, _status=200, data=None, set_type=True):
         if data is not None:
             self.send_response(_status, data)
         else:
             self.send_response(_status)
 
-        self.send_header('Content-type', 'application/json')
+        if set_type:
+            self.send_header('Content-type', 'application/json')
         self.end_headers()
 
     def do_HEAD(self):
         self._set_headers()
 
     def do_GET(self):
-        self._set_headers()
         try:
             file_to_open = open(self.jsonPath)
+            self._set_headers()
             self.wfile.write(bytes(json.dumps(json.load(file_to_open)),
                                    "utf-8"))
         except FileNotFoundError:
@@ -41,8 +42,7 @@ class Server(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.headers['Content-Type'] != 'application/json':
-            self.send_response(400)
-            self.end_headers()
+            self._set_headers(400)
             return
 
         try:
