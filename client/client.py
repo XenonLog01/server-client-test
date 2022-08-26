@@ -65,4 +65,4 @@ def req_Get(server: str, data: dict):
 
 if __name__ == '__main__':
     # req_Post(f'http://localhost:{port}/', {'id': 1})
-    req_Get(f'http://localhost:{port}/', {'id': 0})
+    req_Get(f'http://localhost:{port}/', {'id': 1})

@@ -18,6 +18,7 @@ Functions:
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import dotenv
 import json
+import sys
 import os
 
 dotenv.load_dotenv()
@@ -174,4 +175,7 @@ class Server(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     httpd = HTTPServer(('localhost', Server.port), Server)
-    httpd.serve_forever()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        sys.exit(0)
