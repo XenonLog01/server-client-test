@@ -16,7 +16,15 @@ Classes:
 from helpers.util import *
 
 class Database:
-    MASTER_JSON = "server/database/master.json"
+    def __init__(self, db_master:str='server/database/master.json') -> None:
+        """A Simple JSON database for storing raw text. **NO ENCRYPTION
+        IS DONE TO THE DATA PUT INTO THE DATABASE, YOU MUST IMPLEMENT
+        THIS YOURSELF**
+
+        Parameters:
+         - db_master :: str - default 'server/database/master.json' : The source JSON file.
+        """
+        self.MASTER_JSON = db_master
 
     # Process the contents of master.json.
     # Respond to request(s) for database by:
